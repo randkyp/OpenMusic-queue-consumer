@@ -5,14 +5,13 @@ class PlaylistsService {
     this._pool = new Pool();
   }
 
-  async getPlaylistSongs(userId, playlistId) {
-    // TODO: userId might be redundant if we're checking it @OpenMusic
+  async getPlaylistSongs(playlistId) {
     const queryPlaylist = {
       text: `SELECT playlists.id AS "id", playlists.name AS "name"
         FROM playlists
         JOIN users ON users.id = playlists.owner
-        WHERE playlists.id = $1 AND playlists.owner = $2;`,
-      values: [playlistId, userId],
+        WHERE playlists.id = $1;`,
+      values: [playlistId],
     };
 
     const playlistResult = await this._pool.query(queryPlaylist);
@@ -23,8 +22,8 @@ class PlaylistsService {
         FROM playlists
         JOIN playlists_songs ON playlists_songs.playlist_id = playlists.id
         JOIN songs ON songs.id = playlists_songs.song_id
-        WHERE playlists.id = $1 AND playlists.owner = $2;`,
-      values: [playlistId, userId],
+        WHERE playlists.id = $1;`,
+      values: [playlistId],
     };
 
     const songsResult = await this._pool.query(querySongs);
